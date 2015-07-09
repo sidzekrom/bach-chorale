@@ -21,9 +21,11 @@ for i in range(130):
             counter += 1
         tribo = gun[(counter+2):(len(gun)-4)]
         stringArr = tribo.split("))((") #separates each vector into an element
-        lister = map(lambda x : x.split(") ("), stringArr) #each vector becomes
+        lister = [x.split(") (") for x in stringArr]
+#        lister = map(lambda x : x.split(") ("), stringArr) #each vector becomes
         #a list of component elements so lister is a list of lists
-        lister2 = map(lambda x : map(obtainNum, x), lister)
+        lister2 = [[obtainNum(each) for each in x] for x in lister]
+#        lister2 = map(lambda x : map(obtainNum, x), lister)
         bookOfLists.append(lister2)
 
 #comment for git
