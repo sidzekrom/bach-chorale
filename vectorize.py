@@ -25,5 +25,6 @@ for i in range(130):
         lister2 = map(lambda x : map(obtainNum, x), lister)
         bookOfLists.append(lister2)
 
+#comment for git
 #lister2 in each iteration is the time series data of the vectors
 #bookOfLists is many time series datasets put together
