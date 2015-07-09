@@ -14,7 +14,7 @@ bookOfLists = []
 for i in range(130):
     counter = 0
     gun = a.readline()
-    if (len(gun) <= 1):
+    if (len(gun) <= 1): #for /n accommodation
         continue
     else:
         while (gun[counter:(counter+2)] != "(("):
