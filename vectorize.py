@@ -1,4 +1,5 @@
 import sys
+import numpy
 
 a = open('chorales.lisp', 'r')
 
