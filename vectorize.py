@@ -80,3 +80,7 @@ for line in bookOfLists:
     bookOfClasses.append(rifle)
     universal_states.append(states)
 #panthi code to achieve the dicts and lists
+
+length_matrix = max(int(key) for key in global_sum_states)
+transitionMatrix = numpy.zeros(shape = (length_matrix,length_matrix),\
+dtype = int)
