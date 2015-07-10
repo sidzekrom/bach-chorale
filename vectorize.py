@@ -1,5 +1,5 @@
 import sys
-import numpy
+import numpy as np
 
 a = open('chorales.lisp', 'r')
 
@@ -22,10 +22,10 @@ for i in range(130):
         tribo = gun[(counter+2):(len(gun)-4)]
         stringArr = tribo.split("))((") #separates each vector into an element
         lister = [x.split(") (") for x in stringArr]
-#        lister = map(lambda x : x.split(") ("), stringArr) #each vector becomes
+        #lister = map(lambda x : x.split(") ("), stringArr) #each vector becomes
         #a list of component elements so lister is a list of lists
         lister2 = [[obtainNum(each) for each in x] for x in lister]
-#        lister2 = map(lambda x : map(obtainNum, x), lister)
+        #lister2 = map(lambda x : map(obtainNum, x), lister)
         bookOfLists.append(lister2)
 
 #comment for git
@@ -56,6 +56,12 @@ def getindex(note):
     return ((((note[0] * 4 + note[1]) * 3 + note[2]) * 2 + note[3]) * 2)\
      + note[4]
 
+#getindex([4,3,2,1,1]) is the max possible length
+#assuming the highest valued note exists somewhere.
+#In the case of max, it is 234. In this case it is 239
+transitionMatrix = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+                                     getindex([4, 3, 2, 1, 1])))
+
 for line in bookOfLists:
     states = {}
     rifle = []
@@ -73,10 +79,33 @@ for line in bookOfLists:
         if ((str(prev + classified_note) not in transitionDict)\
         and index != 0):
             transitionDict[str(prev + classified_note)] = 1
+            transitionMatrix[getindex(prev), getindex(classified_note)] = 1
         elif(index != 0):
             transitionDict[str(prev + classified_note)] += 1
+            transitionMatrix[getindex(prev), getindex(classified_note)] += 1
         prev = classified_note
         index += 1
     bookOfClasses.append(rifle)
     universal_states.append(states)
 #panthi code to achieve the dicts and lists
+
+(heightOfTrans, widthOfTrans) = np.shape(transitionMatrix)
+
+#the following loop normalizes each column so that
+#entries add up to one
+for i in range(widthOfTrans):
+    normFact = 0
+    for j in range(heightOfTrans):
+        normFact += transitionMatrix[j,i]
+    if normFact != 0:
+        for j in range(heightOfTrans):
+            transitionMatrix[j,i] /= normFact
+
+#testing the previous loop here
+'''
+for i in range(widthOfTrans):
+    acc = 0
+    for j in range(heightOfTrans):
+        acc += transitionMatrix[j,i]
+    print acc
+'''
