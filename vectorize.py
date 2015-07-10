@@ -49,7 +49,7 @@ universal_states = []
 #list of dictionaries of bookOfClasses and its count per line
 global_sum_states = {}
 #dictionary of total counts of universal_states keys across all lines
-transitionMatrix = {}
+transitionDict = {}
 #we are assuming that the same HMM is generating all the chorales
 
 def getindex(note):
@@ -70,11 +70,11 @@ for line in bookOfLists:
             states[getindex(classified_note)] += 1
             global_sum_states[getindex(classified_note)] += 1
         rifle.append(classified_note)
-        if ((str(prev + classified_note) not in transitionMatrix)\
+        if ((str(prev + classified_note) not in transitionDict)\
         and index != 0):
-            transitionMatrix[str(prev + classified_note)] = 1
+            transitionDict[str(prev + classified_note)] = 1
         elif(index != 0):
-            transitionMatrix[str(prev + classified_note)] += 1
+            transitionDict[str(prev + classified_note)] += 1
         prev = classified_note
         index += 1
     bookOfClasses.append(rifle)
