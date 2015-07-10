@@ -42,25 +42,41 @@ def classify(note):
     return classified_note
 #self-explanatory changing of 6 list note to 5 list classification
 
+
 bookOfClasses = []
 #map of classify to bookOfLists
 universal_states = []
 #list of dictionaries of bookOfClasses and its count per line
 global_sum_states = {}
 #dictionary of total counts of universal_states keys across all lines
+transitionMatrix = {}
+#we are assuming that the same HMM is generating all the chorales
+
+def getindex(note):
+    return ((((note[0] * 4 + note[1]) * 3 + note[2]) * 2 + note[3]) * 2)\
+     + note[4]
 
 for line in bookOfLists:
     states = {}
     rifle = []
+    prev = []
+    index = 0
     for note in line:
         classified_note = classify(note)
-        if str(classified_note) not in states:
-            states[str(classified_note)] = 1
-            global_sum_states[str(classified_note)] = 1
+        if getindex(classified_note) not in states:
+            states[getindex(classified_note)] = 1
+            global_sum_states[getindex(classified_note)] = 1
         else:
-            states[str(classified_note)] += 1
-            global_sum_states[str(classified_note)] += 1
+            states[getindex(classified_note)] += 1
+            global_sum_states[getindex(classified_note)] += 1
         rifle.append(classified_note)
+        if ((str(prev + classified_note) not in transitionMatrix)\
+        and index != 0):
+            transitionMatrix[str(prev + classified_note)] = 1
+        elif(index != 0):
+            transitionMatrix[str(prev + classified_note)] += 1
+        prev = classified_note
+        index += 1
     bookOfClasses.append(rifle)
     universal_states.append(states)
 #panthi code to achieve the dicts and lists
