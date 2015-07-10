@@ -31,3 +31,21 @@ for i in range(130):
 #comment for git
 #lister2 in each iteration is the time series data of the vectors
 #bookOfLists is many time series datasets put together
+
+# dictionary where we reduce the given variables
+def classify(note):
+    classified_note = [0,0,0,0,0]
+    classified_note[0] = (note[1]-60)//4
+    classified_note[1] = (note[2]-1)//4
+    classified_note[2] = (note[3]+4)//3
+    classified_note[3] = (note[4]-12)//4
+    classified_note[4] = (note[5])
+    return classified_note
+
+bookOfClasses = []
+for line in bookOfLists:
+    rifle = []
+    for note in line:
+        classified_note = classify(note)
+        rifle.append(classified_note)
+    bookOfClasses.append(rifle)
