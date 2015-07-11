@@ -62,23 +62,23 @@ def getindex(note):
 transitionMatrix = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                      getindex([4, 3, 2, 1, 1])))
 
-obsMatrixpitch = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+eventMatrixpitch = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                     20))
-obsMatrixdur = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+eventMatrixdur = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                     16))
-obsMatrixkeysig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+eventMatrixkeysig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                     9))
-obsMatrixtimesig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+eventMatrixtimesig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                     2))
-obsMatrixfermata = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+eventMatrixfermata = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                     2))
 
-def updateobs(prev, note):
-    obsMatrixpitch[getindex(prev), note[1] - 60] += 1
-    obsMatrixdur[getindex(prev), note[2] - 1] += 1
-    obsMatrixkeysig[getindex(prev), note[3] + 4] += 1
-    obsMatrixtimesig[getindex(prev), (note[4] - 12)//4] += 1
-    obsMatrixfermata[getindex(prev), note[5]] += 1
+def updateevents(prev, note):
+    eventMatrixpitch[getindex(prev), note[1] - 60] += 1
+    eventMatrixdur[getindex(prev), note[2] - 1] += 1
+    eventMatrixkeysig[getindex(prev), note[3] + 4] += 1
+    eventMatrixtimesig[getindex(prev), (note[4] - 12)//4] += 1
+    eventMatrixfermata[getindex(prev), note[5]] += 1
 
 for line in bookOfLists:
     states = {}
@@ -87,7 +87,7 @@ for line in bookOfLists:
     index = 0
     for note in line:
         if index != 0:
-            updateobs(prev , note)
+            updateevents(prev , note)
         classified_note = classify(note)
         if getindex(classified_note) not in states:
             states[getindex(classified_note)] = 1
@@ -125,11 +125,11 @@ def normalize_matrix(given_matrix):
 
 #now normalize all matrices:
 normalize_matrix(transitionMatrix)
-normalize_matrix(obsMatrixpitch)
-normalize_matrix(obsMatrixdur)
-normalize_matrix(obsMatrixkeysig)
-normalize_matrix(obsMatrixtimesig)
-normalize_matrix(obsMatrixfermata)
+normalize_matrix(eventMatrixpitch)
+normalize_matrix(eventMatrixdur)
+normalize_matrix(eventMatrixkeysig)
+normalize_matrix(eventMatrixtimesig)
+normalize_matrix(eventMatrixfermata)
 #testing the previous loop here
 
 def check_matrix(matrix):
