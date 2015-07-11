@@ -62,6 +62,24 @@ def getindex(note):
 transitionMatrix = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                      getindex([4, 3, 2, 1, 1])))
 
+obsMatrixpitch = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+                                    5))
+obsMatrixdur = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+                                    4))
+obsMatrixkeysig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+                                    3))
+obsMatrixtimesig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+                                    2))
+obsMatrixfermata = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
+                                    2))
+
+def updateobs(prev, classified_note):
+    obsMatrixpitch[getindex(prev), classified_note[0]] += 1
+    obsMatrixdur[getindex(prev), classified_note[1]] += 1
+    obsMatrixkeysig[getindex(prev), classified_note[2]] += 1
+    obsMatrixtimesig[getindex(prev), classified_note[3]] += 1
+    obsMatrixfermata[getindex(prev), classified_note[4]] += 1
+
 for line in bookOfLists:
     states = {}
     rifle = []
@@ -80,27 +98,37 @@ for line in bookOfLists:
         and index != 0):
             transitionDict[str(prev + classified_note)] = 1
             transitionMatrix[getindex(prev), getindex(classified_note)] = 1
+            updateobs(prev, classified_note)
         elif(index != 0):
             transitionDict[str(prev + classified_note)] += 1
             transitionMatrix[getindex(prev), getindex(classified_note)] += 1
+            updateobs(prev, classified_note)
         prev = classified_note
         index += 1
     bookOfClasses.append(rifle)
     universal_states.append(states)
 #panthi code to achieve the dicts and lists
 
-(heightOfTrans, widthOfTrans) = np.shape(transitionMatrix)
+#modularized normalization of matrices
+def normalize_matrix(given_matrix):
+    (heightofgiven, widthofgiven) = np.shape(given_matrix)
+    #the following loop normalizes each column so that
+    #entries add up to one
+    for i in range(widthofgiven):
+        normFact = 0
+        for j in range(heightofgiven):
+            normFact += given_matrix[j,i]
+            if normFact != 0:
+                for j in range(heightofgiven):
+                    given_matrix[j,i] /= normFact
 
-#the following loop normalizes each column so that
-#entries add up to one
-for i in range(widthOfTrans):
-    normFact = 0
-    for j in range(heightOfTrans):
-        normFact += transitionMatrix[j,i]
-    if normFact != 0:
-        for j in range(heightOfTrans):
-            transitionMatrix[j,i] /= normFact
-
+#now normalize all matrices:
+normalize_matrix(transitionMatrix)
+normalize_matrix(obsMatrixpitch)
+normalize_matrix(obsMatrixdur)
+normalize_matrix(obsMatrixkeysig)
+normalize_matrix(obsMatrixtimesig)
+normalize_matrix(obsMatrixfermata)
 #testing the previous loop here
 '''
 for i in range(widthOfTrans):
