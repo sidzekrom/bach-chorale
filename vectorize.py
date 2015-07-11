@@ -118,9 +118,9 @@ def normalize_matrix(given_matrix):
         normFact = 0
         for j in range(heightofgiven):
             normFact += given_matrix[j,i]
-            if normFact != 0:
-                for j in range(heightofgiven):
-                    given_matrix[j,i] /= normFact
+    if normFact != 0:
+        for j in range(heightofgiven):
+            given_matrix[j,i] /= normFact
 
 #now normalize all matrices:
 normalize_matrix(transitionMatrix)
