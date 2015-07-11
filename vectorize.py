@@ -63,22 +63,22 @@ transitionMatrix = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                      getindex([4, 3, 2, 1, 1])))
 
 obsMatrixpitch = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                    5))
+                                    20))
 obsMatrixdur = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                    4))
+                                    16))
 obsMatrixkeysig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                    3))
+                                    9))
 obsMatrixtimesig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                     2))
 obsMatrixfermata = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
                                     2))
 
-def updateobs(prev, classified_note):
-    obsMatrixpitch[getindex(prev), classified_note[0]] += 1
-    obsMatrixdur[getindex(prev), classified_note[1]] += 1
-    obsMatrixkeysig[getindex(prev), classified_note[2]] += 1
-    obsMatrixtimesig[getindex(prev), classified_note[3]] += 1
-    obsMatrixfermata[getindex(prev), classified_note[4]] += 1
+def updateobs(prev, note):
+    obsMatrixpitch[getindex(prev), note[1] - 60] += 1
+    obsMatrixdur[getindex(prev), note[2] - 1] += 1
+    obsMatrixkeysig[getindex(prev), note[3] + 4] += 1
+    obsMatrixtimesig[getindex(prev), (note[4] - 12)//4] += 1
+    obsMatrixfermata[getindex(prev), note[5]] += 1
 
 for line in bookOfLists:
     states = {}
@@ -86,6 +86,8 @@ for line in bookOfLists:
     prev = []
     index = 0
     for note in line:
+        if index != 0:
+            updateobs(prev , note)
         classified_note = classify(note)
         if getindex(classified_note) not in states:
             states[getindex(classified_note)] = 1
@@ -98,11 +100,9 @@ for line in bookOfLists:
         and index != 0):
             transitionDict[str(prev + classified_note)] = 1
             transitionMatrix[getindex(prev), getindex(classified_note)] = 1
-            updateobs(prev, classified_note)
         elif(index != 0):
             transitionDict[str(prev + classified_note)] += 1
             transitionMatrix[getindex(prev), getindex(classified_note)] += 1
-            updateobs(prev, classified_note)
         prev = classified_note
         index += 1
     bookOfClasses.append(rifle)
@@ -118,15 +118,10 @@ def normalize_matrix(given_matrix):
         normFact = 0
         for j in range(heightofgiven):
             normFact += given_matrix[j,i]
-<<<<<<< HEAD
         if normFact != 0:
             for j in range(heightofgiven):
                 given_matrix[j,i] /= normFact
-=======
-    if normFact != 0:
-        for j in range(heightofgiven):
-            given_matrix[j,i] /= normFact
->>>>>>> 345fd6e4be2482f5c5c9bec8c5246371b43eaecf
+
 
 #now normalize all matrices:
 normalize_matrix(transitionMatrix)
@@ -136,10 +131,11 @@ normalize_matrix(obsMatrixkeysig)
 normalize_matrix(obsMatrixtimesig)
 normalize_matrix(obsMatrixfermata)
 #testing the previous loop here
-'''
-for i in range(widthOfTrans):
-    acc = 0
-    for j in range(heightOfTrans):
-        acc += transitionMatrix[j,i]
-    print acc
-'''
+
+def check_matrix(matrix):
+    (height, width) = np.shape(matrix)
+    for i in range(width):
+        acc = 0
+        for j in range(height):
+            acc += matrix[j,i]
+        print (i, acc)
