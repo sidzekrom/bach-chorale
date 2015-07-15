@@ -70,12 +70,12 @@ eventMatrixfermata = np.zeros(shape = (maxStates, 2))
 initialProb = np.zeros(maxStates)
 #initialProb[i] = probability that chorale begins with state i
 
-def updateevents(prev, note):
-    eventMatrixpitch[getindex(prev), note[1] - 60] += 1
-    eventMatrixdur[getindex(prev), note[2] - 1] += 1
-    eventMatrixkeysig[getindex(prev), note[3] + 4] += 1
-    eventMatrixtimesig[getindex(prev), (note[4] - 12)//4] += 1
-    eventMatrixfermata[getindex(prev), note[5]] += 1
+def updateevents(note):
+    eventMatrixpitch[getindex(note), note[1] - 60] += 1
+    eventMatrixdur[getindex(note), note[2] - 1] += 1
+    eventMatrixkeysig[getindex(note), note[3] + 4] += 1
+    eventMatrixtimesig[getindex(note), (note[4] - 12)//4] += 1
+    eventMatrixfermata[getindex(note), note[5]] += 1
 
 for line in bookOfLists:
     states = {}
