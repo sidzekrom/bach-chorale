@@ -56,22 +56,17 @@ def getindex(note):
     return ((((note[0] * 4 + note[1]) * 3 + note[2]) * 2 + note[3]) * 2)\
      + note[4]
 
-#getindex([4,3,2,1,1]) is the max possible length
-#assuming the highest valued note exists somewhere.
-#In the case of max, it is 234. In this case it is 239
-transitionMatrix = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                     getindex([4, 3, 2, 1, 1])))
+#maxStates the maximum possible number of states we can have.
+#There is a +1 because 0 is an index too and to call the last index
+#we need the matrix size to be last index + 1
+maxStates = getindex([4, 3, 2, 1, 1]) + 1
 
-eventMatrixpitch = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                    20))
-eventMatrixdur = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                    16))
-eventMatrixkeysig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                    9))
-eventMatrixtimesig = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                    2))
-eventMatrixfermata = np.zeros(shape = (getindex([4, 3, 2, 1, 1]),\
-                                    2))
+transitionMatrix = np.zeros(shape = (maxStates, maxStates))
+eventMatrixpitch = np.zeros(shape = (maxStates, 20))
+eventMatrixdur = np.zeros(shape = (maxStates, 16))
+eventMatrixkeysig = np.zeros(shape = (maxStates, 9))
+eventMatrixtimesig = np.zeros(shape = (maxStates, 2))
+eventMatrixfermata = np.zeros(shape = (maxStates, 2))
 
 def updateevents(prev, note):
     eventMatrixpitch[getindex(prev), note[1] - 60] += 1
