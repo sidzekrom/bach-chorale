@@ -85,8 +85,7 @@ for line in bookOfLists:
     classed = classify(line[0])
     initialProb[getindex(classed)] += 1
     for note in line:
-        if index != 0:
-            updateevents(prev , note)
+        updateevents(note)
         classified_note = classify(note)
         if getindex(classified_note) not in states:
             states[getindex(classified_note)] = 1
