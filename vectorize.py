@@ -67,6 +67,8 @@ eventMatrixdur = np.zeros(shape = (maxStates, 16))
 eventMatrixkeysig = np.zeros(shape = (maxStates, 9))
 eventMatrixtimesig = np.zeros(shape = (maxStates, 2))
 eventMatrixfermata = np.zeros(shape = (maxStates, 2))
+initialProb = np.zeros(maxStates)
+#initialProb[i] = probability that chorale begins with state i
 
 def updateevents(prev, note):
     eventMatrixpitch[getindex(prev), note[1] - 60] += 1
@@ -80,6 +82,8 @@ for line in bookOfLists:
     rifle = []
     prev = []
     index = 0
+    classed = classify(line[0])
+    initialProb[getindex(classed)] += 1
     for note in line:
         if index != 0:
             updateevents(prev , note)
@@ -117,6 +121,16 @@ def normalize_matrix(given_matrix):
             for j in range(heightofgiven):
                 given_matrix[j,i] /= normFact
 
+def manhattanNorm(vec):
+    acc = 0
+    for i in range(len(vec)):
+        acc += vec[i]
+    return acc
+
+def normalizeVec(vec, norm):
+    normF = norm(vec)
+    for i in range(len(vec)):
+        vec[i] /= normF
 
 #now normalize all matrices:
 normalize_matrix(transitionMatrix)
@@ -125,6 +139,7 @@ normalize_matrix(eventMatrixdur)
 normalize_matrix(eventMatrixkeysig)
 normalize_matrix(eventMatrixtimesig)
 normalize_matrix(eventMatrixfermata)
+normalizeVec(initialProb, manhattanNorm)
 #testing the previous loop here
 
 def check_matrix(matrix):
