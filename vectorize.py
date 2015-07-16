@@ -51,6 +51,7 @@ global_sum_states = {}
 #dictionary of total counts of universal_states keys across all lines
 transitionDict = {}
 #we are assuming that the same HMM is generating all the chorales
+obserMat = {}
 
 def getindex(note):
     return ((((note[0] * 4 + note[1]) * 3 + note[2]) * 2 + note[3]) * 2)\
@@ -76,6 +77,13 @@ def updateevents(note):
     eventMatrixkeysig[getindex(classify(note)), note[3] + 4] += 1
     eventMatrixtimesig[getindex(classify(note)), (note[4] - 12)//4] += 1
     eventMatrixfermata[getindex(classify(note)), note[5]] += 1
+    if (getindex(classify(note)) not in obserMat):
+        obserMat[getindex(classify(note))] = {}
+        obserMat[getindex(classify(note))]['count'] = 0
+    if (str(note) not in obserMat[getindex(classify(note))]):
+        obserMat[getindex(classify(note))][str(note)] = 0
+    obserMat[getindex(classify(note))][str(note)] += 1
+    obserMat[getindex(classify(note))]['count'] += 1
 
 for line in bookOfLists:
     states = {}
@@ -148,3 +156,17 @@ def check_matrix(matrix):
         for j in range(height):
             acc += matrix[j,i]
         print (i, acc)
+
+#this is the initialize the observation probabilities.
+#it is a very ugly/hacky implementation. Fix it soon
+def setObs():
+    for line in bookOfLists:
+        for note in line:
+            obserMat[getindex(classify(note))][str(note)+'prob'] =\
+            obserMat[getindex(classify(note))][str(note)] /\
+            obserMat[getindex(classify(note))]['count']
+
+setObs()
+
+def obser(stateindex, note):
+    return obserMat[stateindex][str(note)+'prob']
