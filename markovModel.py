@@ -35,4 +35,18 @@ class backward:
             return self.backwardDP[stateIndex, timestep]
         if (timestep == len(self.observe)):
             self.backwardDP[stateIndex, timestep] = 1
+            return 1
+        acc = 0
+        for i in range(maxStates):
+            acc += self.backward(timestep + 1, i) *\
+            transitionMatrix[stateIndex, i] * obser(timestep + 1, stateIndex)
+        self.backwardDP[stateIndex, timestep] = acc
+        return acc
+
+#skipping Viterbi for because there is only one probable state sequence given how
+#we optimized the model. If Baum Welch changes parameters, then we'll code
+#Viterbi
+
+
+#Baum-Welch!
 
