@@ -3,11 +3,11 @@ from vectorize import *
 #forward algorithm done
 class forward:
     def __init__(self, obsSequence):
-        forwardDP = np.zeros(shape = (maxStates, len(obsSequence)))
+        self.forwardDP = np.zeros(shape = (maxStates, len(obsSequence)))
         for i in range(maxStates):
             for j in range(len(obsSequence)):
-                forwardDP[i, j] = -1
-        observe = obsSequence
+                self.forwardDP[i, j] = -1
+        self.observe = obsSequence
     def forward(self, timestep, stateIndex):
         if (self.forwardDP[stateIndex, timestep] != -1):
             return self.forwardDP[stateIndex, timestep]
@@ -22,14 +22,14 @@ class forward:
         self.forwardDP[stateIndex, timestep] = acc
         return acc
 
-#backward algorithm still done
+#backward algorithm done
 class backward:
     def __init__(self, obsSequence):
-        backwardDP = np.zeros(maxStates, len(obsSequence))
+        self.backwardDP = np.zeros(shape = (maxStates, len(obsSequence)))
         for i in range(maxStates):
             for j in range(len(obsSequence)):
-                backwardDP[i, j] = -1
-        observe = obsSequence
+                self.backwardDP[i, j] = -1
+        self.observe = obsSequence
     def backward(self, timestep, stateIndex):
         if (self.backwardDP[stateIndex, timestep] != -1):
             return self.backwardDP[stateIndex, timestep]
@@ -47,11 +47,11 @@ class backward:
 #Viterbi
 class viterbi:
     def __init__(self, obsSequence):
-        viterbiDP = np.zeros(maxStates, len(obsSequence))
+        self.viterbiDP = np.zeros(shape = (maxStates, len(obsSequence)))
         for i in range(maxStates):
             for j in range(len(obsSequence)):
-                viterbiDP[i, j] = -1
-        observe = obsSequence
+                self.viterbiDP[i, j] = -1
+        self.observe = obsSequence
     def seqProb(self, stateIndex, timestep):
         if (self.viterbiDP[stateIndex, timestep] != -1):
             return self.viterbiDP[stateIndex, timestep]
@@ -75,21 +75,21 @@ class viterbi:
 #Baum-Welch!
 class baumWelch:
     def __init__(self, obsSequence):
-        observe = obsSequence
+        self.observe = obsSequence
         #initializing a class for the forward algorithm on the obs sequence
-        fwdAlgo = forward(observe)
+        self.fwdAlgo = forward(self.observe)
         #initializing a class for the backward algorithm on the obs sequence
-        bckAlgo = backward(observe)
-        probObserve = 0
+        self.bckAlgo = backward(self.observe)
+        self.probObserve = 0
         #timestepCalc could actually be any state. I chose the middle state
         #since 2 * (n/2)^2 is optimal runtime.
-        timestepCalc = len(observe) / 2
+        self.timestepCalc = len(self.observe) / 2
         #the following loop computes probObserve, which is formally
         #Pr(O|lambda). The probability of the observation sequence given
         #the parameters of the HMM
         for i in range(maxStates):
-            probObserve += self.fwdAlgo.forward(timestepCalc, i) *\
-                           self.bckAlgo.backward(timestepCalc, i)
+            self.probObserve += self.fwdAlgo.forward(self.timestepCalc, i) *\
+                           self.bckAlgo.backward(self.timestepCalc, i)
     #the following function computes the probability of being at
     #state1 at timestep t and state2 at timestep t+1 given
     #the HMM parameters and observation sequence
@@ -97,13 +97,13 @@ class baumWelch:
         return (self.fwdAlgo.forward(timestep, state1) *\
         transitionMatrix[state1,state2] * self.bckAlgo.backward\
         (timestep+1, state2) * obser(state2, self.observe[timestep])) /\
-        probObserve
+        self.probObserve
     #the following function computes the probability of being in
     #state i at time t given the observation sequence and HMM
     #parameters.
     def computeStateProb(self, timestep, stateIndex):
         return (self.fwdAlgo.forward(timestep, stateIndex) *\
-        self.bckAlgo.backward(timestep, stateIndex)) / probObserve
+        self.bckAlgo.backward(timestep, stateIndex)) / self.probObserve
 
 #this performs a single iteration of the baum welch algorithm.
 #the reason I am not performing all iterations in one function is
@@ -133,4 +133,5 @@ def baumwelchupdate(obsSequence):
 #algorithm go through
 def baumWelchAlgo(obsSequence, numIter):
     for i in range(numIter):
+        print ('Baum Welch Iteration Number!', i)
         baumwelchupdate(obsSequence)

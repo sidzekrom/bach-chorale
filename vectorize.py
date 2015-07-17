@@ -169,4 +169,8 @@ def setObs():
 setObs()
 
 def obser(stateindex, note):
+    if (stateindex not in obserMat):
+        return 0
+    if (str(note)+'prob' not in obserMat[stateindex]):
+        return 0
     return obserMat[stateindex][str(note)+'prob']
