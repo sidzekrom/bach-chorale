@@ -33,7 +33,7 @@ class backward:
     def backward(self, timestep, stateIndex):
         if (self.backwardDP[stateIndex, timestep] != -1):
             return self.backwardDP[stateIndex, timestep]
-        if (timestep == len(self.observe)):
+        if (timestep == len(self.observe) - 1):
             self.backwardDP[stateIndex, timestep] = 1
             return 1
         acc = 0
@@ -44,9 +44,33 @@ class backward:
         self.backwardDP[stateIndex, timestep] = acc
         return acc
 
-#skipping Viterbi for now because there is only one probable state sequence
-#given how we optimized the model. If Baum Welch changes parameters, then
-#we'll code Viterbi
+#Viterbi
+class viterbi:
+    def __init__(self, obsSequence):
+        viterbiDP = np.zeros(maxStates, len(obsSequence))
+        for i in range(maxStates):
+            for j in range(len(obsSequence)):
+                viterbiDP[i, j] = -1
+        observe = obsSequence
+    def seqProb(self, stateIndex, timestep):
+        if (self.viterbiDP[stateIndex, timestep] != -1):
+            return self.viterbiDP[stateIndex, timestep]
+        if (timestep == len(self.observe) - 1):
+            self.viterbiDP[stateIndex, timestep] = obser(stateIndex,\
+                self.observe[timestep])
+            return self.viterbiDP[stateIndex, timestep]
+        acc = 0
+        for i in range(maxStates):
+            acc = max(acc, self.seqProb(i, timestep + 1) *\
+            transitionMatrix[stateIndex, i] * obser(stateIndex,\
+            self.observe[timestep]))
+        self.viterbiDP[stateIndex, timestep] = acc
+        return acc
+    def viterbiAlg():
+        acc = 0
+        for i in range(maxStates):
+            acc = max(acc, initialProb[i] * self.seqProb(i, 1))
+
 
 #Baum-Welch!
 class baumWelch:
