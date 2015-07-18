@@ -1,4 +1,5 @@
 import sys
+import random
 import numpy as np
 
 a = open('chorales.lisp', 'r')
@@ -120,13 +121,13 @@ def normalize_matrix(given_matrix):
     (heightofgiven, widthofgiven) = np.shape(given_matrix)
     #the following loop normalizes each column so that
     #entries add up to one
-    for i in range(widthofgiven):
+    for i in range(heightofgiven):
         normFact = 0
-        for j in range(heightofgiven):
-            normFact += given_matrix[j,i]
+        for j in range(widthofgiven):
+            normFact += given_matrix[i,j]
         if normFact != 0:
-            for j in range(heightofgiven):
-                given_matrix[j,i] /= normFact
+            for j in range(widthofgiven):
+                given_matrix[i,j] /= normFact
 
 def manhattanNorm(vec):
     acc = 0
@@ -139,8 +140,19 @@ def normalizeVec(vec, norm):
     for i in range(len(vec)):
         vec[i] /= normF
 
+#new temporary initialization to transition matrix
+
+transitionMatrix2 = np.zeros(shape = (maxStates, maxStates))
+
+for i in range(maxStates):
+    for j in range(maxStates):
+        transitionMatrix2[i, j] = transitionMatrix[i, j]
+        transitionMatrix[i, j] = random.random()
+
+
 #now normalize all matrices:
 normalize_matrix(transitionMatrix)
+normalize_matrix(transitionMatrix2)
 normalize_matrix(eventMatrixpitch)
 normalize_matrix(eventMatrixdur)
 normalize_matrix(eventMatrixkeysig)
@@ -151,10 +163,10 @@ normalizeVec(initialProb, manhattanNorm)
 
 def check_matrix(matrix):
     (height, width) = np.shape(matrix)
-    for i in range(width):
+    for i in range(height):
         acc = 0
-        for j in range(height):
-            acc += matrix[j,i]
+        for j in range(width):
+            acc += matrix[i,j]
         print (i, acc)
 
 #this is the initialize the observation probabilities.
@@ -162,15 +174,19 @@ def check_matrix(matrix):
 def setObs():
     for line in bookOfLists:
         for note in line:
+            noteCount = obserMat[getindex(classify(note))][str(note)]
+            stateCount = obserMat[getindex(classify(note))]['count']
             obserMat[getindex(classify(note))][str(note)+'prob'] =\
-            obserMat[getindex(classify(note))][str(note)] /\
-            obserMat[getindex(classify(note))]['count']
+                float(noteCount) / float(stateCount)
 
 setObs()
 
 def obser(stateindex, note):
     if (stateindex not in obserMat):
-        return 0
+        return 0.0
     if (str(note)+'prob' not in obserMat[stateindex]):
-        return 0
+        return random.random()
     return obserMat[stateindex][str(note)+'prob']
+
+for i in range(maxStates):
+    initialProb[i] = 1.0 / float(maxStates)

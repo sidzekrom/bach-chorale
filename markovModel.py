@@ -14,7 +14,7 @@ class forward:
         if (timestep == 0):
             self.forwardDP[stateIndex, timestep] = initialProb[stateIndex] *\
                     obser(stateIndex, self.observe[timestep])
-            return initialProb[stateIndex]
+            return self.forwardDP[stateIndex, timestep]
         acc = 0
         for i in range(maxStates):
             acc += self.forward(timestep - 1, i) * transitionMatrix[i,\
@@ -83,7 +83,7 @@ class baumWelch:
         self.probObserve = 0
         #timestepCalc could actually be any state. I chose the middle state
         #since 2 * (n/2)^2 is optimal runtime.
-        self.timestepCalc = len(self.observe) / 2
+        self.timestepCalc = len(self.observe) // 2
         #the following loop computes probObserve, which is formally
         #Pr(O|lambda). The probability of the observation sequence given
         #the parameters of the HMM
@@ -125,7 +125,10 @@ def baumwelchupdate(obsSequence):
             expectedTrans = 0
             for k in range(len(obsSequence) - 1):
                 expectedTrans += bwl.computeStateTrans(k, i, j)
-            transitionMatrix[i, j] = expectedTrans / expectedArrivals
+            if (expectedArrivals == 0):
+                transitionMatrix[i, j] = 0.0
+            else:
+                transitionMatrix[i, j] = expectedTrans / expectedArrivals
     normalize_matrix(transitionMatrix)
 
 #the Baum Welch algorithm implemented with iterations. numIter allows
